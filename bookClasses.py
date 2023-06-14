@@ -1,3 +1,5 @@
+import db
+
 class Book:
     def __init__(self, title: str, author: str, year:int, publisher:str, genre:str) -> None:
         self.title = title
@@ -9,6 +11,7 @@ class Book:
     def printBookInfo(self) -> None:
         print(f"{self.title} by {self.author}, {self.year}, {self.publisher}, {self.genre}")
 
+# FIXME: connect to DB and rewrite to work with DB
 class BookStorage: 
     def __init__(self) -> None:
         self.bookList = []
@@ -29,3 +32,34 @@ class BookStorage:
     def displayBooks(self) -> None: 
         for book in self.bookList:
             book.printBookInfo()
+    
+    def searchBookByTitle(self, title) -> Book:
+        for book in self.bookList:
+            if book.title == title:
+                return book
+    
+    def searchBookByAuthor(self, author) -> list:
+        for book in self.bookList:
+            if book.author == author:
+                return book
+    
+    def searchBookByYear(self, year) -> list:
+        books = []
+        for book in self.bookList:
+            if book.year == year:
+                books.append(book)
+        return books
+    
+    def searchBookByPublisher(self, publisher) -> list:
+        books = []
+        for book in self.bookList:
+            if book.publisher == publisher:
+                books.append(book)
+        return books
+
+    def searchBookByGenre(self, genre) -> list:
+        books = []
+        for book in self.bookList:
+            if book.genre == genre:
+                books.append(book)
+        return books
