@@ -15,10 +15,22 @@ def addNewUserToDB(login: str, password: str) -> None:
 def getAllUsersDataDict() -> dict:
     userDict={}
     for row in cur.execute("""SELECT * FROM users """):
-        userDict['id'] =row[0]
-        userDict['login']=row[1]
-        userDict['password']=row[2]
+        user = {}
+        user['id'] =row[0]
+        user['login']=row[1]
+        user['password']=row[2]
+        userDict[str(row[0])]=user
     return userDict
+
+def getAllUsersDataList() -> list:
+    userList=[]
+    for row in cur.execute("""SELECT * FROM users """):
+        user = []
+        user.append(row[0])
+        user.append(row[1])
+        user.append(row[2])
+        userList.append(user)
+    return userList
 
 def findUser(login: str) -> bool:
     for row in cur.execute("""SELECT * FROM users"""):
@@ -35,6 +47,25 @@ def getUserByLogin(login: str) -> list:
             (login)
             )
         return cur.fetchone()
+
+
+def getAllBooks() -> list:
+    cur.execute("""SELECT * FROM books""")
+    return cur.fetchall()
+
+def getBooksByCreator(user_id: int) -> list:
+    cur.execute(
+        """SELECT * FROM books WHERE user=?""",
+        (user_id)
+        )
+    return cur.fetchall()
+
+def addNewBook(book, id) -> None:
+    cur.execute(
+        """INSERT INTO books (title, author, year, publisher, genre, user) VALUES (?,?,?,?,?,?)""",
+        (book.title, book.author, book.year, book.publisher, book.genre, id)
+        )
+    conn.commit()
 
 
 # login class
@@ -335,4 +366,4 @@ class BookStorageGUI (Root):
 if __name__ == "__main__":
     # app = LoginGUI("Book Storage App")
     # app.runApp()
-    print(getAllUsersDataDict())
+    pass
