@@ -1,5 +1,5 @@
-from GUIClasses import BookStorageGUI 
+from GUIClasses import LoginGUI 
 
 if __name__ == "__main__":
-    app = BookStorageGUI("Book Storage App")
+    app = LoginGUI("Book Storage App")
     app.runApp()

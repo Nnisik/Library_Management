@@ -8,13 +8,14 @@ class Book:
         self.publisher = publisher
         self.genre = genre
     
-    def printBookInfo(self) -> None:
-        print(f"{self.title} by {self.author}, {self.year}, {self.publisher}, {self.genre}")
+    def printBookInfo(self) -> str:
+        return f"{self.title} by {self.author}, {self.year}, {self.publisher}, {self.genre}"
 
 # FIXME: connect to DB and rewrite to work with DB
-class BookStorage: 
-    def __init__(self) -> None:
-        self.bookList = []
+class BookStorage:
+    #TODO  
+    def getAllBooks(self) -> None:
+        pass
     
     def addBook(self, book: Book) -> None:
         if book not in self.bookList:
@@ -33,15 +34,19 @@ class BookStorage:
         for book in self.bookList:
             book.printBookInfo()
     
-    def searchBookByTitle(self, title) -> Book:
+    def searchBookByTitle(self, title) -> list:
+        books = []
         for book in self.bookList:
             if book.title == title:
-                return book
+                books.append(book)
+        return books
     
     def searchBookByAuthor(self, author) -> list:
+        books = []
         for book in self.bookList:
             if book.author == author:
-                return book
+                books.append(book)
+        return books
     
     def searchBookByYear(self, year) -> list:
         books = []
