@@ -2,67 +2,53 @@ import tkinter
 import sqlite3
 
 
-# common database classes
-class db:
-    # connection to database
-    def cursor():
-        conn = sqlite3.connect("library.db")
-        cur = conn.cursor()
-        return cur
+conn = sqlite3.connect("library.db")
+cur = conn.cursor()
 
-class userDB(db):
-    # user commands 
-    def createNewUser(self, login: str, password: str) -> None:
-        # FIXME: doesn't add anything into db
-        c = self.cursor()
-        c.execute("INSERT INTO users (login, password) VALUES (?, ?)", (login, password))
+def addNewUserToDB(login: str, password: str) -> None:
+    cur.execute(
+        """INSERT INTO users (login, password) VALUES (?, ?)""", 
+        (login, password)
+        )
+    conn.commit()
 
-    def getUserDataByLogin(self, login: str):
-        # FIXME: doesn't add anything into db
-        c = self.cursor()
-        with c.connection:
-            c.execute('SELECT * FROM users WHERE login=? ', (login,))
-        result = c.fetchone()
-        c.close()
-        return result
+def getAllUsersDataDict() -> dict:
+    userDict={}
+    for row in cur.execute("""SELECT * FROM users """):
+        userDict['id'] =row[0]
+        userDict['login']=row[1]
+        userDict['password']=row[2]
+    return userDict
 
-    def getUserPasswordByLogin(self, login: str):
-        # FIXME: doesn't add anything into db
-        c = self.cursor()
-        with c.connection:
-            c.execute('SELECT password FROM users WHERE login=?', (login))
-        result = c.fetchone()
-        c.close()
-        return result
+def findUser(login: str) -> bool:
+    for row in cur.execute("""SELECT * FROM users"""):
+        if row[1]==login:
+            return True
+    return False
 
-class bookDB(db):
-    # book commands
-    def getBooks(self) -> list:
-        c = self.cursor()
-        booksList=[]
-        with c.connection:
-            c.execute("SELECT * FROM books")
-            print(c.fetchall())
-
-    def addNewBook(self, book, id) -> None:
-        c = self.cursor()
-        with c.connection:
-            # insert new book
-            c.execute("INSERT INTO books (title, author, year, publisher, genre) VALUES (?, ?, ?, ?, ?)", (book.title, book.author, book.year, book.publisher, book.genre))
+def getUserByLogin(login: str) -> list:
+    if not findUser:
+        print("User doesn't exist.")
+    else:
+        cur.execute(
+            """SELECT * FROM users WHERE login=?""",
+            (login)
+            )
+        return cur.fetchone()
 
 
 # login class
-class Login(userDB):
+class Login:
     def loginUser(self, login, password):
         self.login = login
         self.password = password
 
-    def checkUserExist(self):
-        if db.checkUserExist(self.login):
-            return True
-        else:
-            print("Login not exist")
-            return False
+    # def checkUserExist(self):
+    #     if db.checkUserExist(self.login):
+    #         return True
+    #     else:
+    #         print("Login not exist")
+    #         return False
     
     def getUserPassword(self):
         if self.checkUserExist():
@@ -86,12 +72,12 @@ class Signup:
             print("Password and password repeat don't match")
             exit()
         
-        db.addNewUser(self)
+        # db.addNewUser(self)
     
-    def checkUserNotExist(self):
-        if db.checkUserExist(self.login):
-            print("This user already exists!")
-            return False
+    # def checkUserNotExist(self):
+    #     if db.checkUserExist(self.login):
+    #         print("This user already exists!")
+    #         return False
     
     def passwordsMatch(self):
         return not self.password == self.password_rpt
@@ -173,13 +159,11 @@ class Root:
     def runApp(self) -> None:
         self.root.mainloop()
 
-
 class SignUpGUI (Root):
     def __init__(self, title: str) -> None:
         super().__init__(title)
 
     # TODO: make it fancy
-
 
 class LoginGUI (Root):
     def __init__(self, title: str) -> None:
@@ -224,7 +208,6 @@ class LoginGUI (Root):
         password = self.passwordEntry.get()
 
         Login.loginUser(login, password)
-
 
 class BookStorageGUI (Root):
     def __init__(self, title: str) -> None:
@@ -350,5 +333,6 @@ class BookStorageGUI (Root):
 
 
 if __name__ == "__main__":
-    app = LoginGUI("Book Storage App")
-    app.runApp()
+    # app = LoginGUI("Book Storage App")
+    # app.runApp()
+    print(getAllUsersDataDict())
