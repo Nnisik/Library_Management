@@ -38,15 +38,15 @@ def findUser(login: str) -> bool:
             return True
     return False
 
-def getUserByLogin(login: str) -> list:
-    if not findUser:
-        print("User doesn't exist.")
-    else:
-        cur.execute(
-            """SELECT * FROM users WHERE login=?""",
-            (login)
-            )
-        return cur.fetchone()
+def getUserIDByLogin(login: str) -> int:
+    for row in cur.execute("SELECT * FROM users"):
+        if row[1]==login:
+            return int(row[0])
+
+def getUserPasswordByLogin(login: str) -> str:
+    for row in cur.execute("SELECT * FROM users"):
+        if row[1]==login:
+            return row[2]
 
 
 def getAllBooks() -> list:
@@ -68,25 +68,42 @@ def addNewBook(book, id) -> None:
     conn.commit()
 
 
-# login class
-class Login:
-    def loginUser(self, login, password):
+class User:
+    def __init__(self, id, login, password) -> None:
+        self.id = id
         self.login = login
         self.password = password
-
-    # def checkUserExist(self):
-    #     if db.checkUserExist(self.login):
-    #         return True
-    #     else:
-    #         print("Login not exist")
-    #         return False
     
-    def getUserPassword(self):
-        if self.checkUserExist():
-            password = self.getUserPasswordByLogin(self.login)
-            if password == self.password:
-                # TODO: finnish authtentification
-                pass
+    def getUserBooks(self) -> None:
+        self.bookList = getBooksByCreator(self.id)
+
+
+# login class
+class Login:
+    def loginUser(login, password):
+        print(login)
+        print(password)
+
+        if not findUser(login):
+            print('no such user found!')
+            return
+        
+        if password != getUserPasswordByLogin(login):
+            print('wrong password! try again.')
+            return 
+
+        global start
+        start.closePage()
+
+        app = BookStorageGUI(
+            "Book Storage App", 
+            User(
+                getUserIDByLogin(login), 
+                login, 
+                password
+            )
+        )
+
 
 # signup class
 class Signup:
@@ -113,6 +130,7 @@ class Signup:
     def passwordsMatch(self):
         return not self.password == self.password_rpt
 
+
 class Book:
     def __init__(self, title: str, author: str, year:int, publisher:str, genre:str) -> None:
         self.title = title
@@ -123,6 +141,7 @@ class Book:
     
     def printBookInfo(self) -> str:
         return f"{self.title} by {self.author}, {self.year}, {self.publisher}, {self.genre}"
+
 
 # FIXME: connect to DB and rewrite to work with DB
 class BookStorage:
@@ -182,6 +201,7 @@ class BookStorage:
                 books.append(book)
         return books
 
+
 class Root:
     def __init__(self, title: str) -> None:
         self.root = tkinter.Tk()
@@ -189,12 +209,17 @@ class Root:
 
     def runApp(self) -> None:
         self.root.mainloop()
+    
+    def closePage(self) -> None:
+        self.root.destroy()
+
 
 class SignUpGUI (Root):
     def __init__(self, title: str) -> None:
         super().__init__(title)
 
     # TODO: make it fancy
+
 
 class LoginGUI (Root):
     def __init__(self, title: str) -> None:
@@ -203,25 +228,26 @@ class LoginGUI (Root):
         tkinter.Label(self.root, text=" " * 10).grid(row=0, column=0)
         tkinter.Label(self.root, text=" " * 20).grid(row=0, column=4)
         
-        pageTitle = tkinter.Label(
-            self.root, 
-            text="Войти")
-        pageTitle.grid(row=1, column=3)
+        tkinter.Label(self.root, text="Войти").grid(row=1, column=3)
         
         tkinter.Label(self.root, text=" " * 10).grid(row=2, column=0)
 
         tkinter.Label(self.root, text="Логин: ").grid(row=3, column=1)
         tkinter.Label(self.root, text="Пароль: ").grid(row=4, column=1)
 
-        self.loginEntry = tkinter.Entry().grid(row=3, column=3)
-        self.passwordEntry = tkinter.Entry().grid(row=4, column=3)
+        loginEntry = tkinter.Entry()
+        passwordEntry = tkinter.Entry()
 
         tkinter.Label(self.root, text=" " * 10).grid(row=5, column=0)
 
         submitButton = tkinter.Button(
             self.root, 
             text="Продолжить", 
-            command=self.__loginUser)
+            command=lambda: Login.loginUser(
+                loginEntry.get(), 
+                passwordEntry.get()
+                )
+            )
         submitButton.grid(row=6, column=3)
 
         tkinter.Label(self.root, text=" " * 10).grid(row=7, column=0)
@@ -233,16 +259,17 @@ class LoginGUI (Root):
         signupButton.grid(row=9, column=3)
 
         tkinter.Label(self.root, text=" " * 10).grid(row=10, column=0)
+        
+        loginEntry.grid(row=3, column=3)
+        passwordEntry.grid(row=4, column=3)
 
-    def __loginUser(self):
-        login = self.loginEntry.get()
-        password = self.passwordEntry.get()
-
-        Login.loginUser(login, password)
 
 class BookStorageGUI (Root):
-    def __init__(self, title: str) -> None:
+    def __init__(self, title: str, user: User) -> None:
         super().__init__(title)
+        self.user = user
+        
+        # self.user.getUserBooks()
 
         tkinter.Label(self.root, text="Название: ").grid(row=0, column=0)
         tkinter.Label(self.root, text="Автор: ").grid(row=1, column=0)
@@ -364,6 +391,5 @@ class BookStorageGUI (Root):
 
 
 if __name__ == "__main__":
-    # app = LoginGUI("Book Storage App")
-    # app.runApp()
-    pass
+    start = LoginGUI("Book Storage App")
+    start.runApp()
