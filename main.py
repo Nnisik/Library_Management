@@ -107,28 +107,20 @@ class Login:
 
 # signup class
 class Signup:
-    def signupUser(self, login, password, password_rpt):
-        self.login = login
-        self.password = password
-        self.password_rpt = password_rpt
+    def signupUser(login, password, password_rpt):
+        # check for empty fields
+        if login is "" or password is "" or password_rpt is "":
+            print("empty field detected.")
+        else:
+            if findUser(login):
+                print("user with this login already exist")
 
-        if not self.checkUserNotExist():
-            print('user with this name is alredy registered')
-            exit()
-        
-        if self.passwordsMatch():
-            print("Password and password repeat don't match")
-            exit()
-        
-        # db.addNewUser(self)
-    
-    # def checkUserNotExist(self):
-    #     if db.checkUserExist(self.login):
-    #         print("This user already exists!")
-    #         return False
-    
-    def passwordsMatch(self):
-        return not self.password == self.password_rpt
+            elif password != password_rpt:
+                print("passwords do not match!")
+
+            else:
+                addNewUserToDB(login,password)
+                Login.loginUser(login, password)
 
 
 class Book:
@@ -218,7 +210,41 @@ class SignUpGUI (Root):
     def __init__(self, title: str) -> None:
         super().__init__(title)
 
-    # TODO: make it fancy
+        tkinter.Label(self.root, text=" " * 10).grid(row=0, column=0)
+        tkinter.Label(self.root, text=" " * 40).grid(row=0, column=4)
+        
+        tkinter.Label(self.root, text="Регистрация").grid(row=1, column=3)
+        
+        tkinter.Label(self.root, text=" " * 10).grid(row=2, column=0)
+
+        tkinter.Label(self.root, text="Логин: ").grid(row=3, column=1)
+        tkinter.Label(self.root, text="Пароль: ").grid(row=4, column=1)
+        tkinter.Label(self.root, text="Повторите пароль: ").grid(row=5, column=1)
+
+        loginEntry = tkinter.Entry()
+        passwordEntry = tkinter.Entry()
+        passwordRPTEntry = tkinter.Entry()
+
+        tkinter.Label(self.root, text=" " * 10).grid(row=6, column=0)
+
+        submitButton = tkinter.Button(
+            self.root, 
+            text="Продолжить", 
+            command=lambda: Signup.signupUser(
+                login=loginEntry.get(), 
+                password=passwordEntry.get(), 
+                password_rpt=passwordRPTEntry.get()
+                )
+            )
+        submitButton.grid(row=7, column=3)
+
+        tkinter.Label(self.root, text=" " * 10).grid(row=8, column=0)
+        tkinter.Label(self.root, text=" " * 10).grid(row=9, column=0)
+        
+        loginEntry.grid(row=3, column=3)
+        passwordEntry.grid(row=4, column=3)
+        passwordRPTEntry.grid(row=5, column=3)
+
 
 
 class LoginGUI (Root):
@@ -255,7 +281,7 @@ class LoginGUI (Root):
 
         signupButton = tkinter.Button(
             self.root, 
-            text="Зарегестрироваться")
+            text="Зарегистрироваться")
         signupButton.grid(row=9, column=3)
 
         tkinter.Label(self.root, text=" " * 10).grid(row=10, column=0)
@@ -391,5 +417,5 @@ class BookStorageGUI (Root):
 
 
 if __name__ == "__main__":
-    start = LoginGUI("Book Storage App")
+    start = SignUpGUI("Book Storage App")
     start.runApp()
