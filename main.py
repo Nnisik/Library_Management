@@ -1,37 +1,21 @@
 import tkinter
 import sqlite3
 
-
+# connection to database
 conn = sqlite3.connect("library.db")
+# databse cursor
 cur = conn.cursor()
 
+# creating new user in system by adding it's data into database
 def addNewUserToDB(login: str, password: str) -> None:
     cur.execute(
         """INSERT INTO users (login, password) VALUES (?, ?)""", 
         (login, password)
         )
     conn.commit()
+    return
 
-def getAllUsersDataDict() -> dict:
-    userDict={}
-    for row in cur.execute("""SELECT * FROM users """):
-        user = {}
-        user['id'] =row[0]
-        user['login']=row[1]
-        user['password']=row[2]
-        userDict[str(row[0])]=user
-    return userDict
-
-def getAllUsersDataList() -> list:
-    userList=[]
-    for row in cur.execute("""SELECT * FROM users """):
-        user = []
-        user.append(row[0])
-        user.append(row[1])
-        user.append(row[2])
-        userList.append(user)
-    return userList
-
+# search for user in the database by the login
 def findUser(login: str) -> bool:
     for row in cur.execute("""SELECT * FROM users"""):
         if row[1]==login:
@@ -48,17 +32,20 @@ def getUserPasswordByLogin(login: str) -> str:
         if row[1]==login:
             return row[2]
 
-
+# methods for getting book data
 def getAllBooks() -> list:
     cur.execute("""SELECT * FROM books""")
     return cur.fetchall()
 
 def getBooksByCreator(user_id: int) -> list:
-    cur.execute(
-        """SELECT * FROM books WHERE user=?""",
-        (user_id)
-        )
-    return cur.fetchall()
+    if user_id == 1:
+        return getAllBooks()
+    else:
+        cur.execute(
+            """SELECT * FROM books WHERE user=?""",
+            (user_id)
+            )
+        return cur.fetchall()
 
 def addNewBook(book, id) -> None:
     cur.execute(
@@ -281,13 +268,18 @@ class LoginGUI (Root):
 
         signupButton = tkinter.Button(
             self.root, 
-            text="Зарегистрироваться")
+            text="Зарегистрироваться",
+            command=self.openSignUp)
         signupButton.grid(row=9, column=3)
 
         tkinter.Label(self.root, text=" " * 10).grid(row=10, column=0)
         
         loginEntry.grid(row=3, column=3)
         passwordEntry.grid(row=4, column=3)
+    
+    def openSignUp(self) -> None:
+        signup = SignUpGUI("Book Storage App")
+
 
 
 class BookStorageGUI (Root):
@@ -295,7 +287,7 @@ class BookStorageGUI (Root):
         super().__init__(title)
         self.user = user
         
-        # self.user.getUserBooks()
+        bookList = self.user.getUserBooks()
 
         tkinter.Label(self.root, text="Название: ").grid(row=0, column=0)
         tkinter.Label(self.root, text="Автор: ").grid(row=1, column=0)
@@ -352,8 +344,7 @@ class BookStorageGUI (Root):
 
         tkinter.Label(self.root, text="").grid(row=5, column=0)
 
-        self.bookList = tkinter.Listbox(self.root, width=50).grid(
-            row=6, column=0, columnspan=3, padx=5, pady=5)
+        self.bookList = tkinter.Listbox(self.root, width=50).grid(row=6, column=0, columnspan=3, padx=5, pady=5)
 
         tkinter.Label(self.root, text="    ").grid(row=0, column=6)
 
@@ -417,5 +408,5 @@ class BookStorageGUI (Root):
 
 
 if __name__ == "__main__":
-    start = SignUpGUI("Book Storage App")
+    start = LoginGUI("Book Storage App")
     start.runApp()
