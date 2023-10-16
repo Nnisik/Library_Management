@@ -8,48 +8,45 @@ cur = conn.cursor()
 
 # creating new user in system by adding it's data into database
 def addNewUserToDB(login: str, password: str) -> None:
-    sql = """INSERT INTO users (login, password) VALUES (?, ?)"""
+    sql = "INSERT INTO users (login, password) VALUES (?, ?)"
     cur.execute(sql , (login, password))
     conn.commit()
     return
 
 # search for user in the database by the login
 def findUser(login: str) -> bool:
-    for row in cur.execute("""SELECT * FROM users"""):
+    sql = "SELECT * FROM users"
+    for row in cur.execute(sql):
         if row[1]==login:
             return True
     return False
 
 def getUserIDByLogin(login: str) -> int:
-    for row in cur.execute("SELECT * FROM users"):
-        if row[1]==login:
-            return int(row[0])
+    sql = "SELECT * FROM users"
+    for row in cur.execute(sql):
+        if row[1] == login:
+            break
+    return int(row[0]) 
 
 def getUserPasswordByLogin(login: str) -> str:
-    for row in cur.execute("SELECT * FROM users"):
+    sql = "SELECT * FROM users"
+    for row in cur.execute(sql):
         if row[1]==login:
             return row[2]
 
 # methods for getting book data
-def getAllBooks() -> list:
-    cur.execute("SELECT * FROM books")
+def getUserBooks(user_id: int) -> list:
+    if user_id == 1:
+        sql = "SELECT * FROM books"
+        cur.execute(sql)
+    else:
+        sql = "SELECT * FROM books WHERE user=?"
+        cur.execute(sql,(user_id))
     return cur.fetchall()
 
-def getBooksByCreator(user_id: int) -> list:
-    if user_id == 1:
-        return getAllBooks()
-    else:
-        cur.execute(
-            """SELECT * FROM books WHERE user=?""",
-            (user_id)
-            )
-        return cur.fetchall()
-
 def addNewBook(book, id) -> None:
-    cur.execute(
-        """INSERT INTO books (title, author, year, publisher, genre, user) VALUES (?,?,?,?,?,?)""",
-        (book.title, book.author, book.year, book.publisher, book.genre, id)
-        )
+    sql = "INSERT INTO books (title, author, year, publisher, genre, user) VALUES (?,?,?,?,?,?)"
+    cur.execute(sql,(book.title, book.author, book.year, book.publisher, book.genre, id))
     conn.commit()
 
 
@@ -60,7 +57,7 @@ class User:
         self.password = password
     
     def getUserBooks(self) -> None:
-        self.bookList = getBooksByCreator(self.id)
+        self.bookList = getUserBooks(self.id)
 
 
 # login class
@@ -179,7 +176,7 @@ class BookStorage:
         return books
 
 
-class Root:
+class GUI:
     def __init__(self, title: str) -> None:
         self.root = tkinter.Tk()
         self.root.title(title)
@@ -191,7 +188,7 @@ class Root:
         self.root.destroy()
 
 
-class SignUpGUI (Root):
+class SignUpGUI (GUI):
     def __init__(self, title: str) -> None:
         super().__init__(title)
 
@@ -232,7 +229,7 @@ class SignUpGUI (Root):
 
 
 
-class LoginGUI (Root):
+class LoginGUI (GUI):
     def __init__(self, title: str) -> None:
         super().__init__(title)
 
@@ -280,7 +277,7 @@ class LoginGUI (Root):
 
 
 
-class BookStorageGUI (Root):
+class BookStorageGUI (GUI):
     def __init__(self, title: str, user: User) -> None:
         super().__init__(title)
         self.user = user
@@ -354,7 +351,7 @@ class BookStorageGUI (Root):
         self.__clearListBox()
         if books is None:
             # TODO: get information for all books from the DB
-            bookList = BookStorage.getAllBooks()
+            bookList = BookStorage.getUserBooks()
             # TODO: for each of the book add it's data into a list box
             pass
         else:
