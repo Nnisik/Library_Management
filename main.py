@@ -8,10 +8,8 @@ cur = conn.cursor()
 
 # creating new user in system by adding it's data into database
 def addNewUserToDB(login: str, password: str) -> None:
-    cur.execute(
-        """INSERT INTO users (login, password) VALUES (?, ?)""", 
-        (login, password)
-        )
+    sql = """INSERT INTO users (login, password) VALUES (?, ?)"""
+    cur.execute(sql , (login, password))
     conn.commit()
     return
 
@@ -34,7 +32,7 @@ def getUserPasswordByLogin(login: str) -> str:
 
 # methods for getting book data
 def getAllBooks() -> list:
-    cur.execute("""SELECT * FROM books""")
+    cur.execute("SELECT * FROM books")
     return cur.fetchall()
 
 def getBooksByCreator(user_id: int) -> list:
@@ -389,6 +387,7 @@ class BookStorageGUI (Root):
         self.displayBookInfo(bookList)
 
     def __addBook(self) -> None:
+        # FIXME: doesnt get book data from Entry fields
         title = self.titleEntry.get()
         author = self.authorEntry.get()
         year = self.yearEntry.get()
