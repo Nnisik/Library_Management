@@ -29,6 +29,12 @@ class Main(object):
         #search bar
         search_bar = LabelFrame(centerRightFrame, width=440, height=75, text="Search Box", bg="#9bc977")
         search_bar.pack(fill=BOTH)
+        self.lbl_search=Label(search_bar, text="Search :", font='ariel 12 bold', bg='#9bc977', fg='white')
+        self.lbl_search.grid(row=0,column=0,padx=20, pady=10)
+        self.ent_search=Entry(search_bar, width=30, bd=10)
+        self.ent_search.grid(row=0,column=1,columnspan=3,pady=10)
+        self.btn_search=Button(search_bar,text='Search',font='ariel 12',bg='#fcc324',fg='white')
+        self.btn_search.grid(row=0,column=4,padx=20,pady=10)
 
         #list bar
         list_bar = LabelFrame(centerRightFrame, width=440, height=175, text='List Box', bg='#fcc324')
@@ -45,6 +51,8 @@ class Main(object):
         #give book
         self.btngive=Button(topFrame, text='Give Book', font='arial 12 bold', padx=10)
         self.btngive.pack(side=LEFT)
+
+
 
 
 
