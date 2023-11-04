@@ -39,6 +39,17 @@ class Main(object):
         #list bar
         list_bar = LabelFrame(centerRightFrame, width=440, height=175, text='List Box', bg='#fcc324')
         list_bar.pack(fill=BOTH)
+        lbl_list=Label(list_bar,text='Short By',font='times 16 bold',fg='#2488ff',bg='#fcc324')
+        lbl_list.grid(row=0,column=2)
+        self.listChoise=IntVar()
+        rb1=Radiobutton(list_bar,text='All Books',var=self.listChoise,value=1,bg='#fcc324')
+        rb2=Radiobutton(list_bar,text='In Library',var=self.listChoise,value=2,bg='#fcc324')
+        rb3=Radiobutton(list_bar,text='Borrowed Books',var=self.listChoise,value=3,bg='#fcc324')
+        rb1.grid(row=1,column=0)
+        rb2.grid(row=1,column=1)
+        rb3.grid(row=1,column=2)
+        btn_list=Button(list_bar, text="List Books",bg='#2488ff',fg='white',font='ariel 12')
+        btn_list.grid(row=1,column=3,padx=40,pady=10)
 
         #add book
         self.btnbook = Button(topFrame, text='Add Book', font='arial 12 bold')
@@ -51,8 +62,6 @@ class Main(object):
         #give book
         self.btngive=Button(topFrame, text='Give Book', font='arial 12 bold', padx=10)
         self.btngive.pack(side=LEFT)
-
-
 
 
 
