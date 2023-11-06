@@ -63,6 +63,28 @@ class Main(object):
         self.btngive=Button(topFrame, text='Give Book', font='arial 12 bold', padx=10)
         self.btngive.pack(side=LEFT)
 
+####################################TABS######################################
+    ################################Tab1#############################################
+        self.tabs=ttk.Notebook(centerLeftFrame,width=900,height=660)
+        self.tabs.pack()
+        # self.tab1_icon=PhotoImage(file='icons/books.png')
+        # self.tab2_icon=PhotoImage(file='icons/mambers.png')
+        self.tab1=ttk.Frame(self.tabs)
+        self.tab2=ttk.Frame(self.tabs)
+        self.tabs.add(self.tab1,text="Library Managment")
+        self.tabs.add(self.tab2,text="Statistics")
+
+        #list books
+        self.list_books=Listbox(self.tab1,width=40,height=30,bd=5,font='times 12 bold')
+        self.sb=Scrollbar(self.tab1, orient=VERTICAL)
+        self.list_books.grid(row=0,column=0,padx=(10,0),pady=10,sticky=N)
+        self.sb.config(command=self.list_books.yview)
+        self.list_books.config(yscrollcommand=self.sb.set)
+        self.sb.grid(row=0,column=0,sticky=N+S+E)
+
+        #list details
+        self.list_details=Listbox(self.tab1,width=80,height=30,bd=5,font='times 12 bold')
+        self.list_details.grid(row=0,column=1,padx=(10,0),pady=10,sticky=N)
 
 
 def main():
