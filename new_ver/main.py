@@ -1,5 +1,10 @@
 from tkinter import *
 from tkinter import ttk
+import sqlite3
+
+
+con=sqlite3.connect('library.db')
+cur=con.cursor()
 
 
 class Main(object):
