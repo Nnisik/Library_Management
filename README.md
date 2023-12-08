@@ -7,6 +7,8 @@ Python application for managing the home library
 # Functionalaties
 * *
 
+# Screenshots
+
 # admin details
 Username - admin
 Password - admin
