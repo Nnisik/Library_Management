@@ -10,5 +10,5 @@ Python application for managing the home library
 # Screenshots
 
 # admin details
-Username - admin
+Username - admin /n
 Password - admin
