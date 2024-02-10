@@ -2,13 +2,14 @@
 Python application for managing the home library
 
 # Technologies used
-* Python
+* tkinter
+* sqlite
 
 # Functionalaties
-* *
+* 
 
 # Screenshots
 
 # admin details
-Username - admin /n
+Username - admin \n
 Password - admin
