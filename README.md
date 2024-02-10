@@ -1,15 +1,15 @@
 # Library_Management
 Python application for managing the home library
 
-# Technologies used
+## Technologies used
 * tkinter
 * sqlite
 
-# Functionalaties
+## Functionalaties
 * 
 
-# Screenshots
+## Screenshots
 
-# admin details
+## admin details
 Username - admin </br>
 Password - admin </br>
